@@ -1,5 +1,5 @@
 {
-    "version": "1.0.1",
+    "version": "1.0.2",
     "summary": "Start Elm applications without a view",
     "repository": "https://github.com/lukewestby/worker.git",
     "license": "MIT",
