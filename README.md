@@ -13,9 +13,9 @@ import Time
 type alias Model =
     Int
 
-model : Model
-model =
-    0
+init : (Model, Cmd Msg)
+init =
+    (0, Cmd.none)
 
 
 type Msg
@@ -40,7 +40,7 @@ port modelOut : Model -> Cmd msg
 main : Program Never
 main =
     Worker.worker modelOut
-        { model = model
+        { init = init
         , update = wrapUpdate update
         , subscriptions = subscriptions
         }
