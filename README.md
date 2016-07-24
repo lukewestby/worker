@@ -41,7 +41,7 @@ main : Program Never
 main =
     Worker.worker modelOut
         { init = init
-        , update = wrapUpdate update
+        , update = update
         , subscriptions = subscriptions
         }
 ```
