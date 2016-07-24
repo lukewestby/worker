@@ -35,19 +35,9 @@ subscriptions _ =
 port modelOut : Model -> Cmd msg
 
 
-wrapUpdate : (Msg -> Model -> Model) -> (Msg -> Model -> (Model, Cmd Msg))
-wrapUpdate innerUpdate =
-    \msg model ->
-        let
-            nextModel =
-                innerUpdate msg model
-        in
-            (nextModel, modelOut nextModel)
-
-
 main : Program Never
 main =
-    Worker.worker
+    Worker.worker modelOut
         { model = model
         , update = wrapUpdate update
         , subscriptions = subscriptions
