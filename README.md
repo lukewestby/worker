@@ -2,6 +2,8 @@
 
 Start Elm apps without views
 
+### Example
+
 ```elm
 port module Main exposing (..)
 
@@ -44,7 +46,8 @@ main =
         }
 ```
 
-```js
+
+```javascript
 var app = Elm.Main.worker()
 app.ports.modelOut.subscribe(function (model) {
   document.getElementById('seconds').innerHTML = model.toString()

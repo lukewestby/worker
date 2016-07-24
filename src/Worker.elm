@@ -38,16 +38,28 @@ wrapInit extraCmds innerInit =
             )
 
 
-{-| Start a worker program with flags from the outside world
+{-| Start a worker program with flags from the outside world, including extra
+Cmds to wrap init and update in case you want to include port calls on every
+Msg.
 
-    ```javascript
-    // Program { userId : String, token : String }
+In your Elm program
+
+    port modelOut : Model -> Cmd msg
+
+    main : Program { userId: String, token : String }
+    main =
+        Worker.workerWithFlags modelOut
+            { init = \{ userId, token } -> init userId token
+            , update = update
+            , subscriptions = subscriptions
+            }
+
+In JavaScript
 
     var app = Elm.MyApp.worker({
         userId: 'Tom',
         token: '12345'
     });
-    ```
 -}
 workerWithFlags :
     (model -> Cmd msg)
@@ -65,7 +77,18 @@ workerWithFlags extraCmds { init, update, subscriptions } =
         }
 
 
-{-| Start a worker program
+{-| Start a worker program, including extra Cmds to wrap init and update in case
+you want to include port calls on every Msg.
+
+    port modelOut : Model -> Cmd msg
+
+    main : Program Never
+    main =
+        Worker.worker modelOut
+            { init = init
+            , update = update
+            , subscriptions = subscriptions
+            }
 -}
 worker :
     (model -> Cmd msg)
@@ -82,7 +105,17 @@ worker extraCmds { init, update, subscriptions } =
         }
 
 
-{-| Start a worker program with just a model a simpler update function
+{-| Start a worker program with just a model and a simpler update function
+
+    port modelOut : Model -> Cmd msg
+
+    main : Program Never
+    main =
+        Worker.beginnerWorker modelOut
+            { model = model
+            , update = update
+            }
+
 -}
 beginnerWorker :
     (model -> Cmd msg)
