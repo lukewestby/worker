@@ -81,9 +81,18 @@ main =
 
 **app.js**
 ```javascript
-var app = Elm.Main.worker()
-app.ports.modelOut.subscribe(function (model) {
-  document.getElementById('seconds').innerHTML = model.toString()
+window.addEventListener('loaded', function () {
+  var app = Elm.Main.worker()
+
+  app.ports.modelOut.subscribe(function (model) {
+    document.getElementById('count').innerHTML = model;
+  })
+
+  document
+    .getElementById('incrementButton')
+    .addEventListener('click', function () {
+      app.ports.messagesIn.send('Increment')
+    })
 })
 ```
 
