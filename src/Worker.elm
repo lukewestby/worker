@@ -1,8 +1,8 @@
-module Worker exposing (workerWithFlags, worker, beginnerWorker)
+module Worker exposing (programWithFlags, program)
 
 {-| Start Elm applications without a view
 
-@docs workerWithFlags, worker, beginnerWorker
+@docs programWithFlags, program
 -}
 
 import VirtualDom
@@ -61,14 +61,14 @@ In JavaScript
         token: '12345'
     });
 -}
-workerWithFlags :
+programWithFlags :
     (model -> Cmd msg)
     -> { init : flags -> ( model, Cmd msg )
        , update : msg -> model -> ( model, Cmd msg )
        , subscriptions : model -> Sub msg
        }
     -> Program flags
-workerWithFlags extraCmds { init, update, subscriptions } =
+programWithFlags extraCmds { init, update, subscriptions } =
     VirtualDom.programWithFlags
         { init = wrapInit extraCmds init
         , update = wrapUpdate extraCmds update
@@ -90,42 +90,16 @@ you want to include port calls on every Msg.
             , subscriptions = subscriptions
             }
 -}
-worker :
+program :
     (model -> Cmd msg)
     -> { init : ( model, Cmd msg )
        , update : msg -> model -> ( model, Cmd msg )
        , subscriptions : model -> Sub msg
        }
     -> Program Never
-worker extraCmds { init, update, subscriptions } =
-    workerWithFlags extraCmds
+program extraCmds { init, update, subscriptions } =
+    programWithFlags extraCmds
         { init = \_ -> init
         , update = update
         , subscriptions = subscriptions
-        }
-
-
-{-| Start a worker program with just a model and a simpler update function
-
-    port modelOut : Model -> Cmd msg
-
-    main : Program Never
-    main =
-        Worker.beginnerWorker modelOut
-            { model = model
-            , update = update
-            }
-
--}
-beginnerWorker :
-    (model -> Cmd msg)
-    -> { model : model
-       , update : msg -> model -> model
-       }
-    -> Program Never
-beginnerWorker extraCmds { model, update } =
-    worker extraCmds
-        { init = ( model, Cmd.none )
-        , update = \msg model -> ( update msg model, Cmd.none )
-        , subscriptions = \_ -> Sub.none
         }
