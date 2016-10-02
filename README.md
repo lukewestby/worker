@@ -32,14 +32,14 @@ type Msg
     | NoOp
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Increment ->
-            model + 1
+            (model + 1, Cmd.none)
 
         NoOp ->
-            model
+            (model, Cmd.none)
 
 
 {-| In this function we define `parse` in order to go from
