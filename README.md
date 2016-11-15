@@ -1,15 +1,17 @@
 # Worker
 
-Start Elm apps without views
+## This package is deprecated as of Elm 0.18 and the addition of `Platform.program`.
+
+The example below explains how to use `Platform.program` to provide the
+functionality you might have used this package for prior to 0.18.
 
 ### Example
-
 
 **Main.elm**
 ```elm
 port module Main exposing (..)
 
-import Worker
+import Platform
 
 {-| We'll receive messages from the world in the form of strings here -}
 port messagesIn : (String -> msg) -> Sub msg
@@ -32,14 +34,27 @@ type Msg
     | NoOp
 
 
+{-| This update will send a Cmd to send the model out over a port on every msg. This
+can be abstracted into a separate function as your app becomes larger and your
+updates become more complicated.
+-}
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-    case msg of
-        Increment ->
-            (model + 1, Cmd.none)
+    let
+        (nextModel, nextCmd) =
+            case msg of
+                Increment ->
+                    (model + 1, Cmd.none)
 
-        NoOp ->
-            (model, Cmd.none)
+                NoOp ->
+                    (model, Cmd.none)
+    in
+      ( nextModel
+      , Cmd.batch
+          [ nextCmd
+          , modelOut nextModel
+          ]
+      )
 
 
 {-| In this function we define `parse` in order to go from
@@ -62,16 +77,9 @@ subscriptions _ =
         messagesIn parse
 
 
-{-| The first argument to Worker.worker lets us wrap our update
-function with additional Cmds to execute on every change. In this
-case we want to send our model out to JS on every update so we
-pass it our `modelOut` port. We are already receiving messages from
-our `messagesIn` port via `subscriptions` so now we're fully connected
-to the JavaScript side of the application!
--}
 main : Program Never
 main =
-    Worker.program modelOut
+    Platform.program
         { init = init
         , update = update
         , subscriptions = subscriptions
